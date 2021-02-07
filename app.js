@@ -19,6 +19,7 @@ const articleSchema = {
 
 const Article = mongoose.model("Article", articleSchema);
 
+/************************ Routes for ALL Articles*****************************/
 app.route("/articles")
 
   .get(function(req, res){
@@ -54,6 +55,36 @@ app.route("/articles")
       }
     });
   });
+
+/************************ Routes for Specific Article*************************/
+app.route("/articles/:articleID")
+  .get(function(req, res){
+    
+    Article.findOne({title: req.params.articleID}, function(err, foundArticle){
+      if(!err){
+        if(foundArticle){
+          res.send(foundArticle);
+        } else {
+          res.send("No articles matching params were found.")
+        }
+      } else {
+        console.log(err);
+      }
+    });
+  })
+  .put(function(req, res){
+
+  })
+  .patch(function(req, res){
+
+  })
+  .delete(function(req, res){
+
+  });
+
+
+
+
 
 app.listen(3000, function(){
   console.log("Server started on port 3000");
