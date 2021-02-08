@@ -57,10 +57,9 @@ app.route("/articles")
   });
 
 /************************ Routes for Specific Article*************************/
-app.route("/articles/:articleID")
+app.route("/articles/:articleTitle")
   .get(function(req, res){
-    
-    Article.findOne({title: req.params.articleID}, function(err, foundArticle){
+    Article.findOne({title: req.params.articleTitle}, function(err, foundArticle){
       if(!err){
         if(foundArticle){
           res.send(foundArticle);
@@ -72,19 +71,50 @@ app.route("/articles/:articleID")
       }
     });
   })
+  /**
+   * Put requests REPLACES the entire resource so conditions must include all
+   * parameters for the document. 
+   */
   .put(function(req, res){
-
+    Article.update(
+      {title: req.params.articleTitle},
+      {title: req.body.title, content: req.body.content}, 
+      {overwrite: true}, 
+      function(err){
+      if(!err){
+        res.send("Successfully updated article");
+      } else {
+        res.send(err);
+      }
+    })
   })
+  /**
+   * Patch request only replaces the part of the document that is 
+   * specified while keeping the other parts of the document 
+   * untouched.
+   */
   .patch(function(req, res){
-
+    Article.update(
+      {title: req.params.articleTitle},
+      {$set: req.body},
+      function(err){
+        if(!err){
+          res.send("Successfully updated article by patching.");
+        } else {
+          res.send(err);
+        }
+      }
+    );
   })
   .delete(function(req, res){
-
+    Article.deleteOne({title: req.params.articleTitle}, function(err){
+      if(!err){
+        res.send("Article successfully deleted");
+      } else {
+        res.send(err);
+      }
+    })
   });
-
-
-
-
 
 app.listen(3000, function(){
   console.log("Server started on port 3000");
